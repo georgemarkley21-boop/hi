@@ -300,6 +300,34 @@ function toFlag(iso) {
   return iso.toUpperCase().replace(/[A-Z]/g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
 }
 
+const GENRE_EMOJI = {
+  'Action':      '⚡',
+  'Adventure':   '🗺️',
+  'Animation':   '🎨',
+  'Comedy':      '😂',
+  'Crime':       '🔫',
+  'Documentary': '📽️',
+  'Drama':       '🎭',
+  'Family':      '👨‍👩‍👧',
+  'Fantasy':     '🧙',
+  'History':     '📜',
+  'Horror':      '👻',
+  'Music':       '🎵',
+  'Mystery':     '🔍',
+  'Romance':     '❤️',
+  'Science Fiction': '🚀',
+  'Sci-Fi':      '🚀',
+  'Thriller':    '🔪',
+  'War':         '⚔️',
+  'Western':     '🤠',
+};
+function genreEmoji(name) { return GENRE_EMOJI[name] || '🎬'; }
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
 // Which week of release is the movie currently in? (1-indexed)
 function weekOfRelease(releaseDate) {
   if (!releaseDate) return null;
@@ -378,6 +406,7 @@ function renderWeekGrid(movies) {
           const dropPct  = rate * 100;
           return `<div class="week-movie">
             <div class="week-movie-title">${m.title}</div>
+            <div style="font-family:sans-serif;font-size:10px;color:var(--muted);margin-bottom:3px">${fmtDate(m.release_date)}</div>
             <div class="week-movie-meta">
               <span class="week-est">${fmt(estWk)}</span>
               ${legsPill(dropPct)}
@@ -407,9 +436,9 @@ function renderTable(movies, prevRanks) {
     return `<tr>
       <td style="color:var(--muted);font-weight:700">${i+1}</td>
       <td class="c">${rankPill(m.title, i+1, prevRanks)}</td>
-      <td><span class="movie-title">${m.title}<span>${m.release_date || ''}</span></span></td>
+      <td><span class="movie-title">${m.title}<span>${fmtDate(m.release_date)}</span></span></td>
       <td><span class="origin-cell">${toFlag(m.origin_iso)}<span>${m.origin_name}</span></span></td>
-      <td>${(m.genres||[]).map(g=>`<span class="genre-badge">${g}</span>`).join('')}</td>
+      <td>${(m.genres||[]).map(g=>`<span class="genre-badge">${genreEmoji(g)} ${g}</span>`).join('')}</td>
       <td class="r gross">${fmt(m.revenue)}</td>
       <td class="r">
         <div class="legs-wrap">
