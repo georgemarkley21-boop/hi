@@ -211,7 +211,7 @@
 <div id="main">
   <header>
     <p class="eyebrow">Box Office Report</p>
-    <h1>Domestic Box Office — Past 30 Days</h1>
+    <h1>Box Office — Past 30 Days</h1>
     <p class="subtitle" id="report-dates"></p>
     <hr class="divider" />
   </header>
@@ -413,8 +413,11 @@ function renderTable(movies, prevRanks) {
       <td class="r gross">${fmt(m.revenue)}</td>
       <td class="r">
         <div class="legs-wrap">
-          ${legsPill(drop)}
-          <span class="legs-est">Est. ${fmt(estThisWk)} this wk · Wk ${wks}</span>
+          <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+            ${legsPill(drop)}
+            <span style="font-family:sans-serif;font-size:12px;font-weight:700;color:var(--muted)">Wk ${wks}</span>
+          </div>
+          <span class="legs-est">Est. ${fmt(estThisWk)} this wk</span>
         </div>
       </td>
       <td class="r" style="color:var(--muted)">${m.vote_average ? m.vote_average.toFixed(1)+' / 10' : '—'}</td>
