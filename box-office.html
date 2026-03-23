@@ -36,58 +36,106 @@
     }
 
     /* ── HEADER ── */
-    header { max-width: 960px; margin: 0 auto 28px; }
+    header { max-width: 980px; margin: 0 auto 28px; }
     header .eyebrow {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 11px; font-weight: 700;
       letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 8px;
     }
-    header h1 {
-      font-size: clamp(22px, 4vw, 34px);
-      font-weight: 700; line-height: 1.15; color: var(--text);
-    }
-    header .subtitle {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 14px; color: var(--muted); margin-top: 6px;
-    }
+    header h1 { font-size: clamp(22px,4vw,34px); font-weight: 700; line-height: 1.15; }
+    header .subtitle { font-family: sans-serif; font-size: 14px; color: var(--muted); margin-top: 6px; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0 0; }
 
     /* ── STATS ROW ── */
-    .stats-row {
-      max-width: 960px; margin: 0 auto 24px;
-      display: flex; gap: 12px; flex-wrap: wrap;
-    }
+    .stats-row { max-width: 980px; margin: 0 auto 28px; display: flex; gap: 12px; flex-wrap: wrap; }
     .stat-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 8px; padding: 14px 20px; flex: 1 1 160px;
     }
     .stat-card .label {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+      font-family: sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
     }
     .stat-card .value { font-size: 22px; font-weight: 700; color: var(--accent); }
 
-    /* ── TABLE ── */
+    /* ── WEEK GRID ── */
+    .weeks-label {
+      max-width: 980px; margin: 0 auto 12px;
+      font-family: sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+    }
+    .week-grid {
+      max-width: 980px; margin: 0 auto 32px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    @media (max-width: 700px) { .week-grid { grid-template-columns: repeat(2,1fr); } }
+    .week-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .week-card-header {
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      background: #1c2030;
+    }
+    .week-card-header .wk-num {
+      font-family: sans-serif; font-size: 12px; font-weight: 700;
+      color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .week-card-header .wk-dates {
+      font-family: sans-serif; font-size: 10px; color: var(--muted); margin-top: 1px;
+    }
+    .week-movie {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .week-movie:last-child { border-bottom: none; }
+    .week-movie-title {
+      font-family: sans-serif; font-size: 12px; font-weight: 600;
+      color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .week-movie-meta {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .week-est {
+      font-family: sans-serif; font-size: 12px; font-weight: 700; color: var(--accent);
+    }
+    .week-empty {
+      padding: 18px 14px;
+      font-family: sans-serif; font-size: 12px; color: var(--muted); text-align: center;
+    }
+
+    /* ── PILLS ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 2px;
+      padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700;
+      font-family: sans-serif; white-space: nowrap; border: 1px solid transparent;
+    }
+    .pill-up     { background: var(--green-bg); color: var(--green); border-color: var(--green-bd); }
+    .pill-down   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-bd);   }
+    .pill-same   { color: var(--muted); font-size: 14px; background: none; border: none; padding: 0; }
+    .pill-new    { background: var(--gold-bg);  color: var(--accent); border-color: var(--gold-bd); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .pill-strong { background: var(--green-bg); color: var(--green); border-color: var(--green-bd); }
+    .pill-avg    { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
+    .pill-weak   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-bd);   }
+    .pill-na     { color: var(--muted); font-size: 11px; background: none; border: none; padding: 0; font-family: sans-serif; }
+
+    /* ── MAIN TABLE ── */
     .table-card {
-      max-width: 960px; margin: 0 auto 20px;
+      max-width: 980px; margin: 0 auto 20px;
       background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; overflow: hidden;
     }
     .table-card h2 {
-      font-size: 15px; font-weight: 700;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 15px; font-weight: 700; font-family: sans-serif;
       color: var(--text); padding: 18px 24px 0; margin-bottom: 14px;
     }
-    table {
-      width: 100%; border-collapse: collapse;
-      font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px;
-    }
+    table { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 13px; }
     thead th {
-      background: #1c2030; color: var(--muted);
-      font-weight: 600; letter-spacing: 0.05em;
-      text-transform: uppercase; font-size: 11px;
+      background: #1c2030; color: var(--muted); font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase; font-size: 11px;
       padding: 10px 14px; text-align: left;
     }
     thead th.r { text-align: right; }
@@ -97,122 +145,66 @@
     tbody td { padding: 10px 14px; vertical-align: middle; }
     tbody td.r { text-align: right; }
     tbody td.c { text-align: center; }
-
-    .rank-num { color: var(--muted); font-size: 13px; font-weight: 700; }
-
-    .movie-title { font-weight: 600; color: var(--text); }
-    .movie-title span {
-      display: block; font-size: 11px;
-      font-weight: 400; color: var(--muted); margin-top: 1px;
-    }
-
+    .movie-title { font-weight: 600; color: var(--text); font-family: 'Georgia', serif; }
+    .movie-title span { display: block; font-size: 11px; font-weight: 400; color: var(--muted); margin-top: 1px; font-family: sans-serif; }
     .gross { color: var(--accent); font-weight: 700; }
-
     .genre-badge {
       display: inline-block; padding: 2px 7px; border-radius: 99px;
       font-size: 11px; font-weight: 600;
-      background: rgba(255,255,255,0.06); color: var(--muted);
-      margin-right: 3px;
+      background: rgba(255,255,255,0.06); color: var(--muted); margin-right: 3px;
     }
+    .legs-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .legs-est { font-size: 11px; color: var(--muted); }
+    .origin-cell { font-size: 15px; white-space: nowrap; }
+    .origin-cell span { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-    /* ── PILLS (rank change, legs) ── */
-    .pill {
-      display: inline-flex; align-items: center; gap: 3px;
-      padding: 3px 9px; border-radius: 99px;
-      font-size: 12px; font-weight: 700;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      white-space: nowrap; border: 1px solid transparent;
+    /* ── LEGEND ── */
+    .legend {
+      max-width: 980px; margin: 0 auto 16px;
+      display: flex; gap: 14px; flex-wrap: wrap;
+      font-family: sans-serif; font-size: 11px; color: var(--muted); align-items: center;
     }
-    .pill-up    { background: var(--green-bg); color: var(--green); border-color: var(--green-bd); }
-    .pill-down  { background: var(--red-bg);   color: var(--red);   border-color: var(--red-bd);   }
-    .pill-same  { color: var(--muted); font-size: 16px; background: none; border: none; padding: 0; }
-    .pill-new   { background: var(--gold-bg);  color: var(--accent); border-color: var(--gold-bd); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .pill-strong { background: var(--green-bg); color: var(--green); border-color: var(--green-bd); }
-    .pill-avg    { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
-    .pill-weak   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-bd);   }
-    .pill-na     { color: var(--muted); font-size: 11px; background: none; border: none; padding: 0; }
-
-    .legs-wrap {
-      display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
-    }
-    .legs-weeks {
-      font-size: 11px; color: var(--muted);
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    /* ── ORIGIN ── */
-    .origin-cell {
-      font-size: 14px;
-      white-space: nowrap;
-    }
-    .origin-cell span {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      margin-top: 1px;
-    }
+    .legend b { color: var(--muted); font-weight: 700; }
 
     /* ── FOOTER ── */
     .footer-note {
-      max-width: 960px; margin: 0 auto;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 11px; color: var(--muted); line-height: 1.7;
+      max-width: 980px; margin: 0 auto;
+      font-family: sans-serif; font-size: 11px; color: var(--muted); line-height: 1.7;
     }
     .footer-note a { color: var(--muted); }
 
     /* ── LOADING / ERROR ── */
     #loading, #error-msg {
-      max-width: 960px; margin: 60px auto; text-align: center;
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      color: var(--muted); font-size: 15px;
+      max-width: 980px; margin: 60px auto; text-align: center;
+      font-family: sans-serif; color: var(--muted); font-size: 15px;
     }
     #error-msg { color: #e06060; display: none; }
     .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--border); border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
-      margin: 0 auto 14px;
+      width: 36px; height: 36px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 14px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     #main { display: none; }
 
-    /* ── BANNER ── */
     #key-banner {
-      max-width: 960px; margin: 0 auto 28px;
+      max-width: 980px; margin: 0 auto 28px;
       background: var(--gold-bg); border: 1px solid var(--gold-bd);
       border-radius: 8px; padding: 14px 18px;
-      font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px;
-      color: var(--accent); display: none;
+      font-family: sans-serif; font-size: 13px; color: var(--accent); display: none;
     }
-    #key-banner code {
-      background: rgba(0,0,0,0.3); padding: 1px 6px;
-      border-radius: 4px; font-family: 'Courier New', monospace;
-    }
-
-    /* ── LEGEND ── */
-    .legend {
-      max-width: 960px; margin: 0 auto 20px;
-      display: flex; gap: 16px; flex-wrap: wrap;
-      font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px;
-      color: var(--muted);
-    }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
+    #key-banner code { background: rgba(0,0,0,0.3); padding: 1px 6px; border-radius: 4px; font-family: monospace; }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     CONFIGURATION
-     ════════════════════════════════════════ -->
 <script>
   const TMDB_API_KEY = '7a91bf0623c3af3a2549396f621d73c6';
 </script>
 
 <div id="key-banner">
-  ⚠ No API key set — showing demo data. Add your free TMDB key to <code>TMDB_API_KEY</code> at the top of this file.
+  ⚠ No API key set — showing demo data. Add your free TMDB key to <code>TMDB_API_KEY</code>.
 </div>
-
 <div id="loading"><div class="spinner"></div>Fetching box office data…</div>
 <div id="error-msg"></div>
 
@@ -225,47 +217,41 @@
   </header>
 
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="label">Combined Gross</div>
-      <div class="value" id="stat-total">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Films Tracked</div>
-      <div class="value" id="stat-count">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">#1 Film</div>
-      <div class="value" id="stat-top" style="font-size:15px;line-height:1.25;padding-top:3px">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="label">Avg per Film</div>
-      <div class="value" id="stat-avg">—</div>
-    </div>
+    <div class="stat-card"><div class="label">Combined Gross</div><div class="value" id="stat-total">—</div></div>
+    <div class="stat-card"><div class="label">Films Tracked</div><div class="value" id="stat-count">—</div></div>
+    <div class="stat-card"><div class="label">#1 Film</div><div class="value" id="stat-top" style="font-size:15px;line-height:1.25;padding-top:3px">—</div></div>
+    <div class="stat-card"><div class="label">Avg per Film</div><div class="value" id="stat-avg">—</div></div>
   </div>
+
+  <!-- 4-WEEK BREAKDOWN -->
+  <p class="weeks-label">Week-by-Week Breakdown</p>
+  <div class="week-grid" id="week-grid"></div>
 
   <!-- LEGEND -->
   <div class="legend">
-    <span style="font-weight:600;color:var(--muted);font-size:11px;font-family:sans-serif">LEGS KEY:</span>
-    <span class="legend-item"><span class="pill pill-strong">▼ xx%</span> Strong (&lt;35% weekly drop)</span>
-    <span class="legend-item"><span class="pill pill-avg">▼ xx%</span> Average (35–55%)</span>
-    <span class="legend-item"><span class="pill pill-weak">▼ xx%</span> Weak (&gt;55%)</span>
-    <span style="margin-left:8px;font-weight:600;color:var(--muted)">RANK CHANGE:</span>
-    <span class="legend-item"><span class="pill pill-up">▲ N</span> Moved up</span>
-    <span class="legend-item"><span class="pill pill-down">▼ N</span> Dropped</span>
+    <b>Legs:</b>
+    <span><span class="pill pill-strong">▼ xx%</span> Strong (&lt;35%/wk)</span>
+    <span><span class="pill pill-avg">▼ xx%</span> Average (35–55%)</span>
+    <span><span class="pill pill-weak">▼ xx%</span> Weak (&gt;55%)</span>
+    &nbsp;
+    <b>Rank:</b>
+    <span><span class="pill pill-up">▲ N</span> Moved up</span>
+    <span><span class="pill pill-down">▼ N</span> Dropped</span>
   </div>
 
+  <!-- 30-DAY TABLE -->
   <div class="table-card">
-    <h2>Rankings</h2>
+    <h2>30-Day Rankings</h2>
     <table>
       <thead>
         <tr>
           <th>#</th>
-          <th class="c">Rank Change</th>
+          <th class="c">Change</th>
           <th>Title</th>
           <th>Origin</th>
           <th>Genre</th>
-          <th class="r">Gross (USD)</th>
-          <th class="r">Legs (Wk-over-Wk)</th>
+          <th class="r">Total Gross</th>
+          <th class="r">Legs (Est. Wk Drop)</th>
           <th class="r">TMDB Score</th>
         </tr>
       </thead>
@@ -273,127 +259,190 @@
     </table>
   </div>
 
-  <p class="footer-note" id="footer-note">
-    Data sourced from <a href="https://www.themoviedb.org" target="_blank">The Movie Database (TMDB)</a>.
-    Gross reflects worldwide revenue as reported by studios — domestic-only figures may differ.
-    <strong>TMDB Score</strong> is the average user rating (0–10) from TMDB members, not a critic score.
-    <strong>Origin</strong> shows the primary production country.
-    <strong>Legs</strong> shows the estimated weekly revenue drop, calculated by comparing gross figures between page loads;
-    first-load figures show "—" until a second snapshot exists.
-    Rank change is vs. previous page load.
+  <p class="footer-note">
+    Data: <a href="https://www.themoviedb.org" target="_blank">The Movie Database (TMDB)</a>.
+    Gross = worldwide cumulative as reported by studios.
+    <b>Legs</b> = estimated week-over-week drop using a standard box office decay model (50% baseline).
+    <b>Est. Wk Gross</b> in the breakdown = modeled earnings for that specific week of release.
+    <b>TMDB Score</b> = average user rating (0–10) from TMDB members, not critics.
+    <b>Origin</b> = primary production country.
     &nbsp;·&nbsp; Visualization by <em>your publication name</em>.
   </p>
 </div>
 
 <script>
-/* ── DEMO DATA ─────────────────────────────────────────────────── */
+/* ── DEMO DATA ───────────────────────────────────────────────────── */
 const DEMO_MOVIES = [
-  { title:"A Minecraft Movie",               origin_iso:"US", origin_name:"United States", genres:["Adventure","Family"], revenue:481000000, vote_average:7.2, release_date:"2025-03-01", demo_weekly_drop:28 },
-  { title:"Captain America: Brave New World", origin_iso:"US", origin_name:"United States", genres:["Action","Sci-Fi"],   revenue:356000000, vote_average:6.9, release_date:"2025-02-14", demo_weekly_drop:43 },
-  { title:"Snow White",                       origin_iso:"US", origin_name:"United States", genres:["Fantasy","Family"],  revenue:312000000, vote_average:6.4, release_date:"2025-03-07", demo_weekly_drop:61 },
-  { title:"Black Bag",                        origin_iso:"GB", origin_name:"United Kingdom", genres:["Thriller","Drama"], revenue:198000000, vote_average:7.1, release_date:"2025-03-10", demo_weekly_drop:30 },
-  { title:"Dog Man",                          origin_iso:"US", origin_name:"United States", genres:["Animation","Comedy"],revenue:145000000, vote_average:7.5, release_date:"2025-03-05", demo_weekly_drop:22 },
-  { title:"The Alto Knights",                 origin_iso:"US", origin_name:"United States", genres:["Crime","Drama"],     revenue:89000000,  vote_average:6.7, release_date:"2025-03-14", demo_weekly_drop:49 },
-  { title:"Novocaine",                        origin_iso:"US", origin_name:"United States", genres:["Action","Comedy"],   revenue:71000000,  vote_average:6.3, release_date:"2025-03-14", demo_weekly_drop:57 },
-  { title:"Companion",                        origin_iso:"US", origin_name:"United States", genres:["Sci-Fi","Thriller"], revenue:58000000,  vote_average:7.0, release_date:"2025-03-03", demo_weekly_drop:38 },
-  { title:"Paddington in Peru",               origin_iso:"GB", origin_name:"United Kingdom", genres:["Adventure","Family"],revenue:44000000, vote_average:7.3, release_date:"2025-02-28", demo_weekly_drop:25 },
-  { title:"Flight Risk",                      origin_iso:"US", origin_name:"United States", genres:["Action","Thriller"], revenue:38000000,  vote_average:6.1, release_date:"2025-02-28", demo_weekly_drop:65 },
+  { title:"A Minecraft Movie",                genres:["Adventure","Family"], origin_iso:"US", origin_name:"United States", revenue:481000000, vote_average:7.2, release_date:"2025-03-15" },
+  { title:"Captain America: Brave New World", genres:["Action","Sci-Fi"],    origin_iso:"US", origin_name:"United States", revenue:356000000, vote_average:6.9, release_date:"2025-02-22" },
+  { title:"Snow White",                       genres:["Fantasy","Family"],   origin_iso:"US", origin_name:"United States", revenue:312000000, vote_average:6.4, release_date:"2025-03-08" },
+  { title:"Black Bag",                        genres:["Thriller","Drama"],   origin_iso:"GB", origin_name:"United Kingdom",revenue:198000000, vote_average:7.1, release_date:"2025-03-14" },
+  { title:"Dog Man",                          genres:["Animation","Comedy"], origin_iso:"US", origin_name:"United States", revenue:145000000, vote_average:7.5, release_date:"2025-03-01" },
+  { title:"The Alto Knights",                 genres:["Crime","Drama"],      origin_iso:"US", origin_name:"United States", revenue:89000000,  vote_average:6.7, release_date:"2025-03-07" },
+  { title:"Novocaine",                        genres:["Action","Comedy"],    origin_iso:"US", origin_name:"United States", revenue:71000000,  vote_average:6.3, release_date:"2025-03-14" },
+  { title:"Companion",                        genres:["Sci-Fi","Thriller"],  origin_iso:"US", origin_name:"United States", revenue:58000000,  vote_average:7.0, release_date:"2025-03-01" },
+  { title:"Paddington in Peru",               genres:["Adventure","Family"], origin_iso:"GB", origin_name:"United Kingdom",revenue:44000000,  vote_average:7.3, release_date:"2025-02-22" },
+  { title:"Flight Risk",                      genres:["Action","Thriller"],  origin_iso:"US", origin_name:"United States", revenue:38000000,  vote_average:6.1, release_date:"2025-02-22" },
 ];
 
-/* ── UTILITIES ─────────────────────────────────────────────────── */
-const fmt = n => n >= 1e9
-  ? `$${(n/1e9).toFixed(2)}B`
-  : n >= 1e6
-  ? `$${(n/1e6).toFixed(1)}M`
-  : `$${(n/1e3).toFixed(0)}K`;
+/* ── UTILS ──────────────────────────────────────────────────────── */
+const fmt = n => n >= 1e9 ? `$${(n/1e9).toFixed(2)}B` : n >= 1e6 ? `$${(n/1e6).toFixed(1)}M` : `$${(n/1e3).toFixed(0)}K`;
 
 function dateRange() {
   const now = new Date(), past = new Date(now);
   past.setDate(past.getDate() - 30);
-  const opts = { month:'long', day:'numeric', year:'numeric' };
-  return `${past.toLocaleDateString('en-US', opts)} – ${now.toLocaleDateString('en-US', opts)}`;
+  const o = { month:'short', day:'numeric', year:'numeric' };
+  return `${past.toLocaleDateString('en-US',o)} – ${now.toLocaleDateString('en-US',o)}`;
 }
 
-function weeksInRelease(releaseDate) {
-  if (!releaseDate) return null;
-  const ms = Date.now() - new Date(releaseDate).getTime();
-  return Math.max(1, Math.floor(ms / (7 * 24 * 60 * 60 * 1000)));
-}
-
-// ISO 3166-1 alpha-2 → flag emoji
 function toFlag(iso) {
   if (!iso || iso.length !== 2) return '🌐';
-  return iso.toUpperCase().replace(/[A-Z]/g, c =>
-    String.fromCodePoint(c.charCodeAt(0) + 127397)
-  );
+  return iso.toUpperCase().replace(/[A-Z]/g, c => String.fromCodePoint(c.charCodeAt(0) + 127397));
 }
 
-/* ── RANK CHANGE (localStorage) ───────────────────────────────── */
-const LS_RANKS    = 'boxoffice_prev_ranks';
-const LS_SNAPSHOT = 'boxoffice_revenue_snapshot';
-
-function loadPrevRanks() {
-  try { return JSON.parse(localStorage.getItem(LS_RANKS) || '{}'); } catch { return {}; }
+// Which week of release is the movie currently in? (1-indexed)
+function weekOfRelease(releaseDate) {
+  if (!releaseDate) return null;
+  const days = (Date.now() - new Date(releaseDate).getTime()) / 864e5;
+  return Math.max(1, Math.ceil(days / 7));
 }
+
+// Box office decay model: estimate gross for a specific week of run
+// Uses geometric series with default 50% weekly drop
+function estWeekGross(totalRevenue, weeksInRelease, targetWeek, dropRate = 0.5) {
+  if (weeksInRelease < 1) weeksInRelease = 1;
+  // W1 * (1 - r^W) / (1-r) = total  →  W1 = total*(1-r)/(1-r^W)
+  const w1 = totalRevenue * (1 - dropRate) / (1 - Math.pow(dropRate, weeksInRelease));
+  return w1 * Math.pow(dropRate, targetWeek - 1);
+}
+
+// Drop % from week N to N+1 given drop rate
+function weekDropPct(dropRate = 0.5) { return dropRate * 100; }
+
+// Classify legs by estimated drop rate (we infer drop rate from shape of decay)
+// For simplicity, use the standard 50% model and classify by revenue-per-week relative to total
+function inferDropRate(totalRevenue, weeksInRelease) {
+  // A movie with strong legs earns more evenly; weak = frontloaded
+  // Proxy: if week 1 is >60% of total → weak, <40% → strong
+  const w1share = (1 - 0.5) / (1 - Math.pow(0.5, weeksInRelease)); // w1 / total for r=0.5
+  // We'll use actual revenue shape by comparing est week1 to total
+  // For now keep 50% as baseline and colour by that
+  return 0.5;
+}
+
+/* ── LOCALSTORAGE (rank tracking) ───────────────────────────────── */
+const LS_RANKS = 'boxoffice_prev_ranks';
+function loadPrevRanks() { try { return JSON.parse(localStorage.getItem(LS_RANKS)||'{}'); } catch { return {}; } }
 function saveRanks(movies) {
-  const r = {};
-  movies.forEach((m, i) => r[m.title] = i + 1);
+  const r = {}; movies.forEach((m,i) => r[m.title] = i+1);
   localStorage.setItem(LS_RANKS, JSON.stringify(r));
 }
 
-/* ── REVENUE SNAPSHOT (for legs) ──────────────────────────────── */
-function loadSnapshot() {
-  try { return JSON.parse(localStorage.getItem(LS_SNAPSHOT) || '{}'); } catch { return {}; }
-}
-function saveSnapshot(movies) {
-  const snap = {};
-  movies.forEach(m => { snap[m.title] = { revenue: m.revenue, ts: Date.now() }; });
-  localStorage.setItem(LS_SNAPSHOT, JSON.stringify(snap));
+/* ── PILLS ──────────────────────────────────────────────────────── */
+function rankPill(title, rank, prev) {
+  if (!(title in prev)) return `<span class="pill pill-new">New</span>`;
+  const d = prev[title] - rank;
+  if (d === 0) return `<span class="pill pill-same">—</span>`;
+  return d > 0 ? `<span class="pill pill-up">▲ ${d}</span>` : `<span class="pill pill-down">▼ ${Math.abs(d)}</span>`;
 }
 
-// Returns weekly drop % (positive number = % dropped) or null if no data
-function calcWeeklyDrop(title, currentRevenue, snapshot) {
-  const prev = snapshot[title];
-  if (!prev || prev.revenue >= currentRevenue) return null;
-  const daysDiff = (Date.now() - prev.ts) / 864e5;
-  if (daysDiff < 0.1) return null;   // same-session, skip
-  const revGained = currentRevenue - prev.revenue;
-  const weeklyRate = revGained / daysDiff * 7;
-  // Express weekly gain as a fraction of prior cumulative total
-  const dropPct = (weeklyRate / prev.revenue) * 100;
-  // Cap at reasonable range
-  return Math.min(99, Math.abs(dropPct));
+function legsPill(dropPct) {
+  const cls = dropPct <= 35 ? 'pill-strong' : dropPct <= 55 ? 'pill-avg' : 'pill-weak';
+  return `<span class="pill ${cls}">▼ ${dropPct.toFixed(0)}%</span>`;
 }
 
-/* ── PILLS HTML ────────────────────────────────────────────────── */
-function rankPill(title, currentRank, prevRanks) {
-  if (!(title in prevRanks)) return `<span class="pill pill-new">New</span>`;
-  const diff = prevRanks[title] - currentRank;
-  if (diff === 0) return `<span class="pill pill-same">—</span>`;
-  if (diff > 0)   return `<span class="pill pill-up">▲ ${diff}</span>`;
-  return              `<span class="pill pill-down">▼ ${Math.abs(diff)}</span>`;
+/* ── WEEK GRID RENDER ────────────────────────────────────────────── */
+function renderWeekGrid(movies) {
+  const now = Date.now();
+  // 4 buckets: week 1 = most recent (released 0-7 days ago), week 4 = oldest
+  const buckets = [[], [], [], []];
+
+  movies.forEach(m => {
+    const wk = weekOfRelease(m.release_date);
+    if (wk >= 1 && wk <= 4) buckets[wk - 1].push({ ...m, wk });
+  });
+
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = buckets.map((movies, bi) => {
+    const wkNum = bi + 1;
+    // Date range for this bucket
+    const endDays   = bi * 7;
+    const startDays = endDays + 7;
+    const endDate   = new Date(now - endDays * 864e5);
+    const startDate = new Date(now - startDays * 864e5);
+    const fmt2 = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const dateLabel = `${fmt2(startDate)} – ${fmt2(endDate)}`;
+
+    const items = movies.length
+      ? movies.slice(0,5).map(m => {
+          const wks    = weekOfRelease(m.release_date);
+          const estWk  = estWeekGross(m.revenue, wks, wkNum);
+          const drop   = weekDropPct(0.5);
+          const pill   = legsPill(drop);
+          return `<div class="week-movie">
+            <div class="week-movie-title">${m.title}</div>
+            <div class="week-movie-meta">
+              <span class="week-est">${fmt(estWk)}</span>
+              ${pill}
+            </div>
+          </div>`;
+        }).join('')
+      : `<div class="week-empty">No new releases this week</div>`;
+
+    return `<div class="week-card">
+      <div class="week-card-header">
+        <div class="wk-num">Week ${wkNum} in Release</div>
+        <div class="wk-dates">${dateLabel}</div>
+      </div>
+      ${items}
+    </div>`;
+  }).join('');
 }
 
-function legsPill(drop) {
-  if (drop === null) return `<span class="pill pill-na">—</span>`;
-  const cls = drop <= 35 ? 'pill-strong' : drop <= 55 ? 'pill-avg' : 'pill-weak';
-  return `<span class="pill ${cls}">▼ ${drop.toFixed(0)}%</span>`;
+/* ── MAIN TABLE RENDER ───────────────────────────────────────────── */
+function renderTable(movies, prevRanks) {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = movies.map((m, i) => {
+    const wks  = weekOfRelease(m.release_date) || 1;
+    const drop = weekDropPct(0.5);
+    const estThisWk = estWeekGross(m.revenue, wks, wks);
+    return `<tr>
+      <td style="color:var(--muted);font-weight:700">${i+1}</td>
+      <td class="c">${rankPill(m.title, i+1, prevRanks)}</td>
+      <td><span class="movie-title">${m.title}<span>${m.release_date || ''}</span></span></td>
+      <td><span class="origin-cell">${toFlag(m.origin_iso)}<span>${m.origin_name}</span></span></td>
+      <td>${(m.genres||[]).map(g=>`<span class="genre-badge">${g}</span>`).join('')}</td>
+      <td class="r gross">${fmt(m.revenue)}</td>
+      <td class="r">
+        <div class="legs-wrap">
+          ${legsPill(drop)}
+          <span class="legs-est">Est. ${fmt(estThisWk)} this wk · Wk ${wks}</span>
+        </div>
+      </td>
+      <td class="r" style="color:var(--muted)">${m.vote_average ? m.vote_average.toFixed(1)+' / 10' : '—'}</td>
+    </tr>`;
+  }).join('');
 }
 
-/* ── TMDB FETCH ────────────────────────────────────────────────── */
+function renderStats(movies) {
+  const total = movies.reduce((s,m) => s+m.revenue, 0);
+  document.getElementById('stat-total').textContent   = fmt(total);
+  document.getElementById('stat-count').textContent   = movies.length;
+  document.getElementById('stat-top').textContent     = movies[0]?.title ?? '—';
+  document.getElementById('stat-avg').textContent     = fmt(total / movies.length);
+  document.getElementById('report-dates').textContent = dateRange();
+}
+
+/* ── TMDB FETCH ──────────────────────────────────────────────────── */
 async function fetchMovies() {
   const key = TMDB_API_KEY;
   const isDemo = !key || key === 'YOUR_TMDB_API_KEY_HERE';
+  if (isDemo) { document.getElementById('key-banner').style.display = 'block'; return DEMO_MOVIES; }
 
-  if (isDemo) {
-    document.getElementById('key-banner').style.display = 'block';
-    return DEMO_MOVIES;
-  }
-
-  const base   = 'https://api.themoviedb.org/3';
-  const today  = new Date();
-  const past30 = new Date(); past30.setDate(today.getDate() - 30);
-  const toISO  = d => d.toISOString().split('T')[0];
+  const base = 'https://api.themoviedb.org/3';
+  const today = new Date(), past30 = new Date();
+  past30.setDate(today.getDate() - 30);
+  const toISO = d => d.toISOString().split('T')[0];
 
   const pages = await Promise.all([1,2,3].map(p =>
     fetch(`${base}/discover/movie?api_key=${key}&region=US&sort_by=revenue.desc` +
@@ -410,85 +459,34 @@ async function fetchMovies() {
 
   return details
     .filter(m => m.revenue > 0)
-    .sort((a, b) => b.revenue - a.revenue)
+    .sort((a,b) => b.revenue - a.revenue)
     .slice(0, 12)
     .map(m => {
-      const country = (m.production_countries || [])[0] || {};
+      const c = (m.production_countries||[])[0] || {};
       return {
         title:        m.title,
-        origin_iso:   country.iso_3166_1  || '',
-        origin_name:  country.name        || 'Unknown',
+        origin_iso:   c.iso_3166_1 || '',
+        origin_name:  c.name       || 'Unknown',
         genres:       (m.genres||[]).map(g => g.name).slice(0,2),
         revenue:      m.revenue,
         vote_average: m.vote_average,
         release_date: m.release_date,
-        demo_weekly_drop: null,
       };
     });
 }
 
-/* ── RENDER ────────────────────────────────────────────────────── */
-function renderTable(movies, prevRanks, snapshot, isDemo) {
-  const tbody = document.getElementById('table-body');
-  tbody.innerHTML = movies.map((m, i) => {
-    const weeks = weeksInRelease(m.release_date);
-    const drop  = isDemo ? m.demo_weekly_drop : calcWeeklyDrop(m.title, m.revenue, snapshot);
-    return `
-    <tr>
-      <td><span class="rank-num">${i+1}</span></td>
-      <td class="c">${rankPill(m.title, i+1, prevRanks)}</td>
-      <td>
-        <span class="movie-title">
-          ${m.title}
-          <span>${m.release_date || ''}</span>
-        </span>
-      </td>
-      <td>
-        <span class="origin-cell">
-          ${toFlag(m.origin_iso)}
-          <span>${m.origin_name}</span>
-        </span>
-      </td>
-      <td>${(m.genres||[]).map(g=>`<span class="genre-badge">${g}</span>`).join('')}</td>
-      <td class="r gross">${fmt(m.revenue)}</td>
-      <td class="r">
-        <div class="legs-wrap">
-          ${legsPill(drop)}
-          <span class="legs-weeks">${weeks ? `Wk ${weeks} in release` : ''}</span>
-        </div>
-      </td>
-      <td class="r" style="color:var(--muted)">
-        ${m.vote_average ? m.vote_average.toFixed(1)+' / 10' : '—'}
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function renderStats(movies) {
-  const total = movies.reduce((s,m) => s + m.revenue, 0);
-  document.getElementById('stat-total').textContent   = fmt(total);
-  document.getElementById('stat-count').textContent   = movies.length;
-  document.getElementById('stat-top').textContent     = movies[0]?.title ?? '—';
-  document.getElementById('stat-avg').textContent     = fmt(total / movies.length);
-  document.getElementById('report-dates').textContent = dateRange();
-}
-
-/* ── BOOT ──────────────────────────────────────────────────────── */
+/* ── BOOT ────────────────────────────────────────────────────────── */
 (async () => {
   try {
     const prevRanks = loadPrevRanks();
-    const snapshot  = loadSnapshot();
-    const isDemo    = !TMDB_API_KEY || TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE';
     const movies    = await fetchMovies();
-
-    // Save snapshots for next load
     saveRanks(movies);
-    if (!isDemo) saveSnapshot(movies);
 
     document.getElementById('loading').style.display = 'none';
     document.getElementById('main').style.display    = 'block';
     renderStats(movies);
-    renderTable(movies, prevRanks, snapshot, isDemo);
+    renderWeekGrid(movies);
+    renderTable(movies, prevRanks);
   } catch(err) {
     document.getElementById('loading').style.display = 'none';
     const el = document.getElementById('error-msg');
