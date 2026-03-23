@@ -387,7 +387,7 @@ function renderWeekGrid(movies) {
     if (wk >= 1 && wk <= 4) buckets[4 - wk].push(m); // flip so oldest=0, newest=3
   });
 
-  const fmtDate = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric' });
 
   const grid = document.getElementById('week-grid');
   grid.innerHTML = buckets.map((mlist, bi) => {
