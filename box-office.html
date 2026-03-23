@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Domestic Box Office — Past 30 Days</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── CONFIG ─────────────────────────────────────────────────────── */
+    :root {
+      --bg:        #0d0f14;
+      --card:      #161a24;
+      --border:    #252a38;
+      --accent:    #e8c44a;
+      --accent2:   #c47f2a;
+      --text:      #eaeaea;
+      --muted:     #7a7f99;
+      --bar-start: #e8c44a;
+      --bar-end:   #c4472a;
+    }
+
+    /* ── RESET ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 20px 48px;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────────────── */
+    header {
+      max-width: 860px;
+      margin: 0 auto 28px;
+    }
+    header .eyebrow {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    header h1 {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+    }
+    header .subtitle {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0 0;
+    }
+
+    /* ── STATS ROW ──────────────────────────────────────────────────── */
+    .stats-row {
+      max-width: 860px;
+      margin: 0 auto 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      flex: 1 1 160px;
+    }
+    .stat-card .label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .stat-card .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ── CHART CARD ─────────────────────────────────────────────────── */
+    .chart-card {
+      max-width: 860px;
+      margin: 0 auto 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 24px 20px;
+    }
+    .chart-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .chart-card .chart-sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      margin-bottom: 18px;
+    }
+    .chart-wrap {
+      position: relative;
+      height: 340px;
+    }
+
+    /* ── TABLE ──────────────────────────────────────────────────────── */
+    .table-card {
+      max-width: 860px;
+      margin: 0 auto 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      padding: 18px 24px 0;
+      margin-bottom: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+    }
+    thead th {
+      background: #1c2030;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 11px;
+      padding: 10px 16px;
+      text-align: left;
+    }
+    thead th:not(:first-child) { text-align: right; }
+    tbody tr { border-top: 1px solid var(--border); }
+    tbody tr:hover { background: rgba(255,255,255,0.025); }
+    tbody td {
+      padding: 11px 16px;
+      vertical-align: middle;
+    }
+    tbody td:not(:first-child) { text-align: right; }
+    .rank {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      width: 28px;
+      display: inline-block;
+    }
+    .movie-title { font-weight: 600; color: var(--text); }
+    .movie-title span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .gross { color: var(--accent); font-weight: 700; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(232,196,74,0.12);
+      color: var(--accent);
+    }
+
+    /* ── FOOTER NOTE ────────────────────────────────────────────────── */
+    .footer-note {
+      max-width: 860px;
+      margin: 0 auto;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer-note a { color: var(--muted); }
+
+    /* ── LOADING / ERROR STATES ─────────────────────────────────────── */
+    #loading, #error-msg {
+      max-width: 860px;
+      margin: 60px auto;
+      text-align: center;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    #error-msg { color: #e06060; display: none; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #main { display: none; }
+
+    /* ── API KEY BANNER ─────────────────────────────────────────────── */
+    #key-banner {
+      max-width: 860px;
+      margin: 0 auto 28px;
+      background: rgba(232,196,74,0.08);
+      border: 1px solid rgba(232,196,74,0.3);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 13px;
+      color: var(--accent);
+      display: none;
+    }
+    #key-banner code {
+      background: rgba(0,0,0,0.3);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     CONFIGURATION — paste your TMDB API key below (free at themoviedb.org)
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+  const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE';   // ← paste key here
+</script>
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<div id="key-banner">
+  ⚠ No API key set — showing demo data. Add your free TMDB key to the <code>TMDB_API_KEY</code> variable at the top of this file.
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  Fetching box office data…
+</div>
+<div id="error-msg"></div>
+
+<div id="main">
+  <header>
+    <p class="eyebrow">Box Office Report</p>
+    <h1 id="report-title">Domestic Box Office — Past 30 Days</h1>
+    <p class="subtitle" id="report-dates"></p>
+    <hr class="divider" />
+  </header>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="label">Combined Gross</div>
+      <div class="value" id="stat-total">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Films Tracked</div>
+      <div class="value" id="stat-count">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">#1 Film</div>
+      <div class="value" id="stat-top" style="font-size:15px;line-height:1.25;padding-top:3px">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Avg per Film</div>
+      <div class="value" id="stat-avg">—</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h2>Revenue by Film</h2>
+    <p class="chart-sub">Worldwide gross reported by studios via TMDB · Figures in millions USD</p>
+    <div class="chart-wrap">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h2>Full Rankings</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Gross (USD)</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <p class="footer-note">
+    Data sourced from <a href="https://www.themoviedb.org" target="_blank">The Movie Database (TMDB)</a>.
+    Revenue figures reflect worldwide gross as reported by studios and may differ from
+    domestic-only totals. Updated on page load. &nbsp;·&nbsp; Visualization by <em>your publication name</em>.
+  </p>
+</div>
+
+<script>
+/* ── DEMO DATA (shown when no API key is set) ───────────────────────── */
+const DEMO_MOVIES = [
+  { title: "Mission: Impossible — Dead Reckoning", genres: ["Action","Thriller"], revenue: 567000000, vote_average: 7.8, release_date: "2025-02-28" },
+  { title: "A Minecraft Movie",                   genres: ["Adventure","Family"], revenue: 481000000, vote_average: 7.2, release_date: "2025-03-01" },
+  { title: "Snow White",                           genres: ["Fantasy","Family"],  revenue: 312000000, vote_average: 6.4, release_date: "2025-03-07" },
+  { title: "Black Bag",                            genres: ["Thriller","Drama"],  revenue: 198000000, vote_average: 7.1, release_date: "2025-03-10" },
+  { title: "Captain America: Brave New World",     genres: ["Action","Sci-Fi"],   revenue: 356000000, vote_average: 6.9, release_date: "2025-02-14" },
+  { title: "Dog Man",                              genres: ["Animation","Comedy"],revenue: 145000000, vote_average: 7.5, release_date: "2025-03-05" },
+  { title: "The Alto Knights",                     genres: ["Crime","Drama"],     revenue: 89000000,  vote_average: 6.7, release_date: "2025-03-14" },
+  { title: "Novocaine",                            genres: ["Action","Comedy"],   revenue: 71000000,  vote_average: 6.3, release_date: "2025-03-14" },
+  { title: "Companion",                            genres: ["Sci-Fi","Thriller"], revenue: 58000000,  vote_average: 7.0, release_date: "2025-03-03" },
+  { title: "Paddington in Peru",                   genres: ["Adventure","Family"],revenue: 44000000,  vote_average: 7.3, release_date: "2025-02-28" },
+];
+
+/* ── UTILITIES ──────────────────────────────────────────────────────── */
+const fmt = n => n >= 1e9
+  ? `$${(n / 1e9).toFixed(2)}B`
+  : n >= 1e6
+  ? `$${(n / 1e6).toFixed(1)}M`
+  : `$${(n / 1e3).toFixed(0)}K`;
+
+const fmtFull = n => '$' + n.toLocaleString('en-US');
+
+function dateRange() {
+  const now  = new Date();
+  const past = new Date(now);
+  past.setDate(past.getDate() - 30);
+  const opts = { month: 'long', day: 'numeric', year: 'numeric' };
+  return `${past.toLocaleDateString('en-US', opts)} – ${now.toLocaleDateString('en-US', opts)}`;
+}
+
+/* ── TMDB FETCH ─────────────────────────────────────────────────────── */
+async function fetchMovies() {
+  const key = TMDB_API_KEY;
+  const isDemo = !key || key === 'YOUR_TMDB_API_KEY_HERE';
+
+  if (isDemo) {
+    document.getElementById('key-banner').style.display = 'block';
+    return DEMO_MOVIES;
+  }
+
+  const base = 'https://api.themoviedb.org/3';
+  const today = new Date();
+  const past30 = new Date(); past30.setDate(today.getDate() - 30);
+  const toISO = d => d.toISOString().split('T')[0];
+
+  // Fetch up to 3 pages of now-playing / recent releases
+  const pages = await Promise.all([1, 2, 3].map(p =>
+    fetch(`${base}/discover/movie?api_key=${key}&region=US&sort_by=revenue.desc` +
+          `&primary_release_date.gte=${toISO(past30)}` +
+          `&primary_release_date.lte=${toISO(today)}` +
+          `&with_release_type=3|2&page=${p}`)
+      .then(r => r.json())
+  ));
+
+  const ids = [...new Set(pages.flatMap(p => (p.results || []).map(m => m.id)))].slice(0, 20);
+  if (ids.length === 0) throw new Error('No movies returned from TMDB. Check your API key.');
+
+  // Enrich with full details (revenue + genres)
+  const details = await Promise.all(ids.map(id =>
+    fetch(`${base}/movie/${id}?api_key=${key}`).then(r => r.json())
+  ));
+
+  return details
+    .filter(m => m.revenue > 0)
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 12)
+    .map(m => ({
+      title:        m.title,
+      genres:       (m.genres || []).map(g => g.name).slice(0, 2),
+      revenue:      m.revenue,
+      vote_average: m.vote_average,
+      release_date: m.release_date,
+    }));
+}
+
+/* ── RENDER ─────────────────────────────────────────────────────────── */
+function renderChart(movies) {
+  const labels  = movies.map(m => m.title.length > 22 ? m.title.slice(0, 21) + '…' : m.title);
+  const data    = movies.map(m => +(m.revenue / 1e6).toFixed(1));
+
+  // Gradient bars
+  const canvas  = document.getElementById('barChart');
+  const ctx     = canvas.getContext('2d');
+  const grad    = ctx.createLinearGradient(0, 0, canvas.width || 800, 0);
+  grad.addColorStop(0,   '#e8c44a');
+  grad.addColorStop(1,   '#c4472a');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Gross (USD millions)',
+        data,
+        backgroundColor: grad,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` $${ctx.parsed.x.toFixed(1)}M worldwide gross`,
+            title: ([ctx]) => movies[ctx.dataIndex].title,
+          },
+          backgroundColor: '#1c2030',
+          borderColor: '#252a38',
+          borderWidth: 1,
+          titleColor: '#eaeaea',
+          bodyColor: '#e8c44a',
+          padding: 12,
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: {
+            color: '#7a7f99',
+            font: { family: "'Helvetica Neue', Arial, sans-serif", size: 11 },
+            callback: v => `$${v}M`,
+          },
+          border: { color: '#252a38' },
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: '#eaeaea',
+            font: { family: "'Helvetica Neue', Arial, sans-serif", size: 12, weight: '600' },
+          },
+          border: { color: '#252a38' },
+        }
+      }
+    }
+  });
+}
+
+function renderTable(movies) {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = movies.map((m, i) => `
+    <tr>
+      <td><span class="rank">${i + 1}</span></td>
+      <td>
+        <span class="movie-title">
+          ${m.title}
+          <span>${m.release_date || ''}</span>
+        </span>
+      </td>
+      <td>${(m.genres || []).map(g => `<span class="badge">${g}</span>`).join(' ')}</td>
+      <td class="gross">${fmt(m.revenue)}</td>
+      <td style="color:#7a7f99">${m.vote_average ? m.vote_average.toFixed(1) + ' / 10' : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderStats(movies) {
+  const total = movies.reduce((s, m) => s + m.revenue, 0);
+  document.getElementById('stat-total').textContent  = fmt(total);
+  document.getElementById('stat-count').textContent  = movies.length;
+  document.getElementById('stat-top').textContent    = movies[0]?.title ?? '—';
+  document.getElementById('stat-avg').textContent    = fmt(total / movies.length);
+  document.getElementById('report-dates').textContent = dateRange();
+}
+
+/* ── BOOT ───────────────────────────────────────────────────────────── */
+(async () => {
+  try {
+    const movies = await fetchMovies();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main').style.display    = 'block';
+    renderStats(movies);
+    renderChart(movies);
+    renderTable(movies);
+  } catch (err) {
+    document.getElementById('loading').style.display   = 'none';
+    const el = document.getElementById('error-msg');
+    el.style.display  = 'block';
+    el.textContent    = `Error: ${err.message}`;
+    console.error(err);
+  }
+})();
+</script>
+</body>
+</html>
