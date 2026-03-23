@@ -262,7 +262,7 @@
   <p class="footer-note">
     Data: <a href="https://www.themoviedb.org" target="_blank">The Movie Database (TMDB)</a>.
     Gross = worldwide cumulative as reported by studios.
-    <b>Legs</b> = estimated week-over-week drop using a standard box office decay model (50% baseline).
+    <b>Legs</b> = estimated week-over-week drop using a decay model calibrated by TMDB audience score (higher score → stronger word of mouth → slower drop).
     <b>Est. Wk Gross</b> in the breakdown = modeled earnings for that specific week of release.
     <b>TMDB Score</b> = average user rating (0–10) from TMDB members, not critics.
     <b>Origin</b> = primary production country.
@@ -316,18 +316,13 @@ function estWeekGross(totalRevenue, weeksInRelease, targetWeek, dropRate = 0.5) 
   return w1 * Math.pow(dropRate, targetWeek - 1);
 }
 
-// Drop % from week N to N+1 given drop rate
-function weekDropPct(dropRate = 0.5) { return dropRate * 100; }
-
-// Classify legs by estimated drop rate (we infer drop rate from shape of decay)
-// For simplicity, use the standard 50% model and classify by revenue-per-week relative to total
-function inferDropRate(totalRevenue, weeksInRelease) {
-  // A movie with strong legs earns more evenly; weak = frontloaded
-  // Proxy: if week 1 is >60% of total → weak, <40% → strong
-  const w1share = (1 - 0.5) / (1 - Math.pow(0.5, weeksInRelease)); // w1 / total for r=0.5
-  // We'll use actual revenue shape by comparing est week1 to total
-  // For now keep 50% as baseline and colour by that
-  return 0.5;
+// Infer weekly drop rate from TMDB audience score — higher score = stronger word of mouth = better legs
+function dropRateFromScore(voteAvg) {
+  if (!voteAvg) return 0.50;
+  if (voteAvg >= 7.5) return 0.28;   // strong legs
+  if (voteAvg >= 7.0) return 0.38;   // above average
+  if (voteAvg >= 6.5) return 0.48;   // average
+  return 0.63;                         // weak legs
 }
 
 /* ── LOCALSTORAGE (rank tracking) ───────────────────────────────── */
@@ -354,44 +349,46 @@ function legsPill(dropPct) {
 /* ── WEEK GRID RENDER ────────────────────────────────────────────── */
 function renderWeekGrid(movies) {
   const now = Date.now();
-  // 4 buckets: week 1 = most recent (released 0-7 days ago), week 4 = oldest
-  const buckets = [[], [], [], []];
+  const MS_WEEK = 7 * 864e5;
 
+  // Buckets indexed 0–3 where 0 = oldest (released 22-28 days ago), 3 = newest (0-7 days ago)
+  // This gives chronological left-to-right order
+  const buckets = [[], [], [], []];
   movies.forEach(m => {
-    const wk = weekOfRelease(m.release_date);
-    if (wk >= 1 && wk <= 4) buckets[wk - 1].push({ ...m, wk });
+    const wk = weekOfRelease(m.release_date); // 1 = newest, 4 = oldest
+    if (wk >= 1 && wk <= 4) buckets[4 - wk].push(m); // flip so oldest=0, newest=3
   });
 
-  const grid = document.getElementById('week-grid');
-  grid.innerHTML = buckets.map((movies, bi) => {
-    const wkNum = bi + 1;
-    // Date range for this bucket
-    const endDays   = bi * 7;
-    const startDays = endDays + 7;
-    const endDate   = new Date(now - endDays * 864e5);
-    const startDate = new Date(now - startDays * 864e5);
-    const fmt2 = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    const dateLabel = `${fmt2(startDate)} – ${fmt2(endDate)}`;
+  const fmtDate = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 
-    const items = movies.length
-      ? movies.slice(0,5).map(m => {
-          const wks    = weekOfRelease(m.release_date);
-          const estWk  = estWeekGross(m.revenue, wks, wkNum);
-          const drop   = weekDropPct(0.5);
-          const pill   = legsPill(drop);
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = buckets.map((mlist, bi) => {
+    // bi 0 = oldest week (4 weeks ago), bi 3 = most recent week
+    const weekAgo   = 4 - bi;                                      // 4,3,2,1
+    const startDate = new Date(now - weekAgo * MS_WEEK);
+    const endDate   = new Date(now - (weekAgo - 1) * MS_WEEK);
+    const dateLabel = `${fmtDate(startDate)} – ${fmtDate(endDate)}`;
+    const weekLabel = bi === 3 ? 'This Week' : bi === 2 ? 'Last Week' : bi === 1 ? '2 Weeks Ago' : '3 Weeks Ago';
+
+    const items = mlist.length
+      ? mlist.slice(0, 5).map(m => {
+          const wks      = weekOfRelease(m.release_date);
+          const rate     = dropRateFromScore(m.vote_average);
+          const estWk    = estWeekGross(m.revenue, wks, wks, rate);
+          const dropPct  = rate * 100;
           return `<div class="week-movie">
             <div class="week-movie-title">${m.title}</div>
             <div class="week-movie-meta">
               <span class="week-est">${fmt(estWk)}</span>
-              ${pill}
+              ${legsPill(dropPct)}
             </div>
           </div>`;
         }).join('')
-      : `<div class="week-empty">No new releases this week</div>`;
+      : `<div class="week-empty">No releases tracked</div>`;
 
     return `<div class="week-card">
       <div class="week-card-header">
-        <div class="wk-num">Week ${wkNum} in Release</div>
+        <div class="wk-num">${weekLabel}</div>
         <div class="wk-dates">${dateLabel}</div>
       </div>
       ${items}
@@ -403,9 +400,10 @@ function renderWeekGrid(movies) {
 function renderTable(movies, prevRanks) {
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = movies.map((m, i) => {
-    const wks  = weekOfRelease(m.release_date) || 1;
-    const drop = weekDropPct(0.5);
-    const estThisWk = estWeekGross(m.revenue, wks, wks);
+    const wks       = weekOfRelease(m.release_date) || 1;
+    const rate      = dropRateFromScore(m.vote_average);
+    const drop      = rate * 100;
+    const estThisWk = estWeekGross(m.revenue, wks, wks, rate);
     return `<tr>
       <td style="color:var(--muted);font-weight:700">${i+1}</td>
       <td class="c">${rankPill(m.title, i+1, prevRanks)}</td>
