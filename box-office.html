@@ -380,43 +380,45 @@ function legsPill(dropPct) {
 function renderWeekGrid(movies) {
   const now = Date.now();
   const MS_WEEK = 7 * 864e5;
-
-  // Buckets indexed 0–3 where 0 = oldest (released 22-28 days ago), 3 = newest (0-7 days ago)
-  // This gives chronological left-to-right order
-  const buckets = [[], [], [], []];
-  movies.forEach(m => {
-    const wk = weekOfRelease(m.release_date); // 1 = newest, 4 = oldest
-    if (wk >= 1 && wk <= 4) buckets[4 - wk].push(m); // flip so oldest=0, newest=3
-  });
-
   const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric' });
 
+  // Each column = a calendar week (3 weeks ago → this week, left to right)
+  // Show all movies that were playing that week, ranked by estimated gross for that week
   const grid = document.getElementById('week-grid');
-  grid.innerHTML = buckets.map((mlist, bi) => {
-    // bi 0 = oldest week (4 weeks ago), bi 3 = most recent week
-    const weekAgo   = 4 - bi;                                      // 4,3,2,1
-    const startDate = new Date(now - weekAgo * MS_WEEK);
-    const endDate   = new Date(now - (weekAgo - 1) * MS_WEEK);
+  grid.innerHTML = [3, 2, 1, 0].map(weeksAgo => {
+    const startDate = new Date(now - (weeksAgo + 1) * MS_WEEK);
+    const endDate   = new Date(now - weeksAgo * MS_WEEK);
     const dateLabel = `${fmtDate(startDate)} – ${fmtDate(endDate)}`;
-    const weekLabel = bi === 3 ? 'This Week' : bi === 2 ? 'Last Week' : bi === 1 ? '2 Weeks Ago' : '3 Weeks Ago';
+    const weekLabel = weeksAgo === 0 ? 'This Week'
+                    : weeksAgo === 1 ? 'Last Week'
+                    : `${weeksAgo + 1} Weeks Ago`;
 
-    const items = mlist.length
-      ? mlist.slice(0, 5).map((m, idx) => {
-          const wks      = weekOfRelease(m.release_date);
-          const rate     = dropRateFromScore(m.vote_average);
-          const estWk    = estWeekGross(m.revenue, wks, wks, rate);
-          const dropPct  = rate * 100;
-          return `<div class="week-movie">
+    // For each movie, figure out what week-of-run it was in during this calendar slot
+    const ranked = movies
+      .map(m => {
+        const currentWk = weekOfRelease(m.release_date);
+        const weekThen  = currentWk - weeksAgo; // week-of-run it was in back then
+        if (weekThen < 1) return null;           // hadn't opened yet
+        const rate   = dropRateFromScore(m.vote_average);
+        const estWk  = estWeekGross(m.revenue, currentWk, weekThen, rate);
+        return { m, weekThen, estWk, dropPct: rate * 100 };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.estWk - a.estWk)
+      .slice(0, 5);
+
+    const items = ranked.length
+      ? ranked.map(({ m, weekThen, estWk, dropPct }, idx) =>
+          `<div class="week-movie">
             <div class="week-movie-title">
               <span style="font-family:sans-serif;font-size:10px;font-weight:700;color:var(--accent);margin-right:5px;opacity:0.7">${idx+1}</span>${m.title}
             </div>
-            <div style="font-family:sans-serif;font-size:10px;color:var(--muted);margin-bottom:3px">${fmtDate(m.release_date)}</div>
+            <div style="font-family:sans-serif;font-size:10px;color:var(--muted);margin-bottom:3px">Wk ${weekThen} · ${fmtDate(m.release_date)}</div>
             <div class="week-movie-meta">
               <span class="week-est">${fmt(estWk)}</span>
               ${legsPill(dropPct)}
             </div>
-          </div>`;
-        }).join('')
+          </div>`).join('')
       : `<div class="week-empty">No releases tracked</div>`;
 
     return `<div class="week-card">
