@@ -23,6 +23,9 @@
       --red-bd:   rgba(239,68,68,0.3);
       --gold-bg:  rgba(232,196,74,0.15);
       --gold-bd:  rgba(232,196,74,0.3);
+      --blue:     #60a5fa;
+      --blue-bg:  rgba(96,165,250,0.15);
+      --blue-bd:  rgba(96,165,250,0.3);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -121,6 +124,7 @@
     .pill-avg    { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bd); }
     .pill-weak   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-bd);   }
     .pill-na     { color: var(--muted); font-size: 11px; background: none; border: none; padding: 0; font-family: sans-serif; }
+    .pill-opening { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-bd); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
 
     /* ── MAIN TABLE ── */
     .table-card {
@@ -337,22 +341,34 @@ function weekOfRelease(releaseDate) {
   return Math.max(1, Math.ceil(days / 7));
 }
 
-// Box office decay model: estimate gross for a specific week of run
-// Uses geometric series with default 50% weekly drop
-function estWeekGross(totalRevenue, weeksInRelease, targetWeek, dropRate = 0.5) {
-  if (weeksInRelease < 1) weeksInRelease = 1;
-  // W1 * (1 - r^W) / (1-r) = total  →  W1 = total*(1-r)/(1-r^W)
-  const w1 = totalRevenue * (1 - dropRate) / (1 - Math.pow(dropRate, weeksInRelease));
-  return w1 * Math.pow(dropRate, targetWeek - 1);
+// Power-law decay: weekGross(n) = W1 / n^alpha
+// More realistic than geometric — drops taper off over time (big wk2 drop, stabilises later)
+function harmonic(W, alpha) {
+  let h = 0;
+  for (let n = 1; n <= W; n++) h += 1 / Math.pow(n, alpha);
+  return h;
 }
 
-// Infer weekly drop rate from TMDB audience score — higher score = stronger word of mouth = better legs
-function dropRateFromScore(voteAvg) {
-  if (!voteAvg) return 0.50;
-  if (voteAvg >= 7.5) return 0.28;   // strong legs
-  if (voteAvg >= 7.0) return 0.38;   // above average
-  if (voteAvg >= 6.5) return 0.48;   // average
-  return 0.63;                         // weak legs
+function estWeekGross(totalRevenue, weeksInRelease, targetWeek, alpha) {
+  if (weeksInRelease < 1) weeksInRelease = 1;
+  const w1 = totalRevenue / harmonic(weeksInRelease, alpha);
+  return w1 / Math.pow(targetWeek, alpha);
+}
+
+// Actual drop % from (targetWeek-1) → targetWeek under power-law model
+// Returns null for opening week (no prior week to compare)
+function weekDropPct(targetWeek, alpha) {
+  if (targetWeek <= 1) return null;
+  return (1 - Math.pow((targetWeek - 1) / targetWeek, alpha)) * 100;
+}
+
+// Map TMDB score to power-law exponent (higher alpha = steeper/faster decline)
+function alphaFromScore(voteAvg) {
+  if (!voteAvg) return 1.4;
+  if (voteAvg >= 7.5) return 0.9;   // strong legs
+  if (voteAvg >= 7.0) return 1.1;   // above average
+  if (voteAvg >= 6.5) return 1.4;   // average
+  return 1.8;                         // weak / front-loaded
 }
 
 /* ── LOCALSTORAGE (rank tracking) ───────────────────────────────── */
@@ -372,6 +388,7 @@ function rankPill(title, rank, prev) {
 }
 
 function legsPill(dropPct) {
+  if (dropPct === null) return `<span class="pill pill-opening">Opening</span>`;
   const cls = dropPct <= 35 ? 'pill-strong' : dropPct <= 55 ? 'pill-avg' : 'pill-weak';
   return `<span class="pill ${cls}">▼ ${dropPct.toFixed(0)}%</span>`;
 }
@@ -399,9 +416,10 @@ function renderWeekGrid(movies) {
         const currentWk = weekOfRelease(m.release_date);
         const weekThen  = currentWk - weeksAgo; // week-of-run it was in back then
         if (weekThen < 1) return null;           // hadn't opened yet
-        const rate   = dropRateFromScore(m.vote_average);
-        const estWk  = estWeekGross(m.revenue, currentWk, weekThen, rate);
-        return { m, weekThen, estWk, dropPct: rate * 100 };
+        const alpha  = alphaFromScore(m.vote_average);
+        const estWk  = estWeekGross(m.revenue, currentWk, weekThen, alpha);
+        const dropPct = weekDropPct(weekThen, alpha); // null if opening week
+        return { m, weekThen, estWk, dropPct };
       })
       .filter(Boolean)
       .sort((a, b) => b.estWk - a.estWk)
@@ -436,9 +454,9 @@ function renderTable(movies, prevRanks) {
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = movies.map((m, i) => {
     const wks       = weekOfRelease(m.release_date) || 1;
-    const rate      = dropRateFromScore(m.vote_average);
-    const drop      = rate * 100;
-    const estThisWk = estWeekGross(m.revenue, wks, wks, rate);
+    const alpha     = alphaFromScore(m.vote_average);
+    const drop      = weekDropPct(wks, alpha); // null if opening week
+    const estThisWk = estWeekGross(m.revenue, wks, wks, alpha);
     return `<tr>
       <td style="color:var(--muted);font-weight:700">${i+1}</td>
       <td class="c">${rankPill(m.title, i+1, prevRanks)}</td>
